@@ -54,7 +54,7 @@ export const TradingTable: React.FC<TradingTableProps> = ({
   const handleResizeMove = (e: MouseEvent) => {
     if (resizingColumn) {
       const diff = e.clientX - resizeStartX;
-      const newWidth = Math.max(0, resizeStartWidth + diff); // Allow width to go to 0
+      const newWidth = Math.max(0, resizeStartWidth + diff); // Allow any width from 0 to unlimited
       onColumnWidthChange(resizingColumn, newWidth);
     }
   };
@@ -93,8 +93,8 @@ export const TradingTable: React.FC<TradingTableProps> = ({
                     key={key} 
                     className="px-1 py-3 text-left font-semibold text-white border-r border-gray-600 bg-gradient-to-b from-gray-600 to-gray-700 hover:from-gray-500 hover:to-gray-600 transition-all duration-200 relative group"
                     style={{ 
-                      width: columnWidths[key] === 0 ? '0px' : `${Math.max(columnWidths[key], 20)}px`,
-                      minWidth: columnWidths[key] === 0 ? '0px' : '20px',
+                      width: columnWidths[key] === 0 ? '0px' : `${columnWidths[key]}px`,
+                      minWidth: columnWidths[key] === 0 ? '0px' : '1px',
                       maxWidth: columnWidths[key] === 0 ? '0px' : 'none',
                       overflow: 'hidden'
                     }}
@@ -114,10 +114,11 @@ export const TradingTable: React.FC<TradingTableProps> = ({
                       className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize hover:bg-blue-500 transition-colors z-20"
                       style={{ 
                         background: resizingColumn === key ? '#3B82F6' : 'transparent',
-                        right: '-1px'
+                        right: '-1px',
+                        display: columnWidths[key] === 0 ? 'none' : 'block'
                       }}
                       onMouseDown={(e) => handleResizeStart(e, key)}
-                      title="Drag to resize column (can resize to 0 width)"
+                      title="Drag to resize column (can resize to any width including 0)"
                     />
                   </th>
                 )
@@ -133,8 +134,8 @@ export const TradingTable: React.FC<TradingTableProps> = ({
                       key={key} 
                       className="px-1 py-2 text-gray-100 border-r border-gray-700"
                       style={{ 
-                        width: columnWidths[key] === 0 ? '0px' : `${Math.max(columnWidths[key], 20)}px`,
-                        minWidth: columnWidths[key] === 0 ? '0px' : '20px',
+                        width: columnWidths[key] === 0 ? '0px' : `${columnWidths[key]}px`,
+                        minWidth: columnWidths[key] === 0 ? '0px' : '1px',
                         maxWidth: columnWidths[key] === 0 ? '0px' : 'none',
                         overflow: 'hidden'
                       }}
@@ -146,6 +147,7 @@ export const TradingTable: React.FC<TradingTableProps> = ({
                              row[key as keyof typeof row].toString().startsWith('-') ? 'text-red-400' : '') : ''
                         }`}
                         style={{ opacity: columnWidths[key] === 0 ? 0 : 1 }}
+                        title={columnWidths[key] < 50 ? row[key as keyof typeof row].toString() : undefined}
                       >
                         {row[key as keyof typeof row]}
                       </div>
